@@ -233,7 +233,6 @@
         browserView.style.pointerEvents = 'auto';
     }
 
-    // ✅ Simple iframe loader using /s/embed.html
     function loadContent(tab) {
         const frame = document.getElementById(`iframe-${tab.id}`);
         if (tab.url && tab.url !== 'about:blank') {
@@ -262,7 +261,6 @@
         }
     }
 
-    // Tab bar clicks
     tabBar.addEventListener('click', (e) => {
         const tabEl = e.target.closest('.tab');
         const closeBtn = e.target.closest('.close-tab-btn');
@@ -278,7 +276,6 @@
         }
     });
 
-    // Events
     searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             const query = searchInput.value.trim();
