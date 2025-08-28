@@ -249,23 +249,29 @@
             }
         });
 
-        // ✅ updated proxyLoad: no external proxy, just embed.html
+        // ✅ updated proxyLoad with safe URL parsing
         async function proxyLoad(url, tabId) {
             loadingOverlay.style.display = 'flex';
             
-            let targetUrl = url;
+            let targetUrl = url.trim();
             if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
-                targetUrl = 'https://' + targetUrl;
+                if (targetUrl.includes('.') && !targetUrl.includes(' ')) {
+                    targetUrl = 'https://' + targetUrl;
+                } else {
+                    targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(targetUrl);
+                }
             }
 
             const tab = tabs.find(t => t.id === tabId);
             if(tab) {
                 tab.url = targetUrl;
                 try {
-                    tab.favicon = `https://www.google.com/s2/favicons?sz=64&domain_url=${new URL(targetUrl).hostname}`;
-                    tab.title = new URL(targetUrl).hostname;
+                    const parsed = new URL(targetUrl);
+                    tab.favicon = `https://www.google.com/s2/favicons?sz=64&domain_url=${parsed.hostname}`;
+                    tab.title = parsed.hostname;
                 } catch (e) {
-                    tab.title = "Loading...";
+                    tab.title = "Search";
+                    tab.favicon = "";
                 }
                 if(tabId === activeTabId) browserUrlBar.value = targetUrl;
                 renderTabs();
@@ -277,7 +283,7 @@
                  return;
             }
 
-            // 🚀 Instead of proxying, just use embed.html
+            // 🚀 just load into embed.html
             frame.src = `/s/embed.html#${encodeURIComponent(targetUrl)}`;
 
             loadingOverlay.style.display = 'none';
@@ -332,3 +338,4 @@
     </script>
 </body>
 </html>
+
