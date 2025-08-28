@@ -279,20 +279,37 @@
         }
     });
 
-    searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const query = searchInput.value.trim();
-            const url = (query.includes('.') && !query.includes(' ')) ? query : `https://search.brave.com/search?q=${encodeURIComponent(query)}`;
-            showBrowser();
-            if (tabs.length === 0) {
-                addTab(url, true);
+     searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        let query = searchInput.value.trim();
+        
+        const isURL = query.includes('.') && !query.includes(' ');
+
+        let url;
+        if (isURL) {
+
+            if (!query.startsWith('http://') && !query.startsWith('https://')) {
+                url = 'https://' + query;
             } else {
-                const tab = tabs.find(t => t.id === activeTabId);
+                url = query;
+            }
+        } else {
+
+            url = `https://search.brave.com/search?q=${encodeURIComponent(query)}`;
+        }
+
+        showBrowser();
+        if (tabs.length === 0) {
+            addTab(url, true);
+        } else {
+            const tab = tabs.find(t => t.id === activeTabId);
+            if (tab) {
                 tab.url = url;
                 loadContent(tab);
             }
         }
-    });
+    }
+});
 
     browserUrlBar.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') navigateToAddress();
